@@ -238,27 +238,23 @@ public class VirtualControllerConfigurationLoader {
                     screenScale(ANALOG_SIZE, height)
             );
             if (config.scrollStickMovesPointer) {
-                // Speed along the border: A slow, X medium, Y fast, in the bottom left corner
+                // Scroll speed: L(ow), M(edium), H(igh), in the bottom left corner
                 ScrollStickDriver driver = ((ScrollStick) scrollStick).getDriver();
                 int[][] speedButtons = {
-                        {VirtualControllerElement.EID_SPEED_SLOW, ScrollStickDriver.SPEED_SLOW,
-                                R.drawable.facebutton_a, R.drawable.facebutton_a_press, 1, 2},
-                        {VirtualControllerElement.EID_SPEED_MEDIUM, ScrollStickDriver.SPEED_MEDIUM,
-                                R.drawable.facebutton_x, R.drawable.facebutton_x_press, 0, 1},
-                        {VirtualControllerElement.EID_SPEED_FAST, ScrollStickDriver.SPEED_FAST,
-                                R.drawable.facebutton_y, R.drawable.facebutton_y_press, 1, 0},
+                        {VirtualControllerElement.EID_SPEED_SLOW, ScrollStickDriver.SPEED_SLOW, 1, 2},
+                        {VirtualControllerElement.EID_SPEED_MEDIUM, ScrollStickDriver.SPEED_MEDIUM, 0, 1},
+                        {VirtualControllerElement.EID_SPEED_FAST, ScrollStickDriver.SPEED_FAST, 1, 0},
                 };
-                String[] labels = {"A", "X", "Y"};
                 for (int i = 0; i < speedButtons.length; i++) {
                     int[] b = speedButtons[i];
                     SpeedButton button = new SpeedButton(controller, context, b[0], driver, b[1]);
-                    button.setText(labels[i]);
-                    button.setIcon(b[2]);
-                    button.setIconPress(b[3]);
-                    // The same diamond as the face buttons: column b[4], row b[5] of a 3 by 3 grid
+                    // The face button look without its letter; SpeedButton draws its own
+                    button.setIcon(R.drawable.facebutton_blank);
+                    button.setIconPress(R.drawable.facebutton_blank_press);
+                    // The same diamond as the face buttons: column b[2], row b[3] of a 3 by 3 grid
                     controller.addElement(button,
-                            screenScale(SPEED_BUTTONS_BASE_X + b[4] * BUTTON_SIZE, height),
-                            screenScale(SPEED_BUTTONS_BASE_Y + b[5] * BUTTON_SIZE, height),
+                            screenScale(SPEED_BUTTONS_BASE_X + b[2] * BUTTON_SIZE, height),
+                            screenScale(SPEED_BUTTONS_BASE_Y + b[3] * BUTTON_SIZE, height),
                             screenScale(BUTTON_SIZE, height),
                             screenScale(BUTTON_SIZE, height)
                     );
