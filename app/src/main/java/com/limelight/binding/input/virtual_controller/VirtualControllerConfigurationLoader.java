@@ -12,6 +12,8 @@ import android.util.DisplayMetrics;
 import com.limelight.R;
 import com.limelight.nvstream.input.ControllerPacket;
 import com.limelight.preferences.PreferenceConfiguration;
+import com.limelight.profiles.ProfilesManager;
+import com.limelight.profiles.SettingsProfile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -185,6 +187,10 @@ public class VirtualControllerConfigurationLoader {
     private static final int BUTTON_BASE_Y = 1;
     private static final int BUTTON_SIZE = 10;
 
+    // The speed buttons of the scroll stick layout, bottom left
+    private static final int SPEED_BUTTONS_BASE_X = 2;
+    private static final int SPEED_BUTTONS_BASE_Y = 40;
+
     private static final int DPAD_BASE_X = 4;
     private static final int DPAD_BASE_Y = 41;
     private static final int DPAD_SIZE = 30;
@@ -219,6 +225,48 @@ public class VirtualControllerConfigurationLoader {
 
         // NOTE: Some of these getPercent() expressions seem like they can be combined
         // into a single call. Due to floating point rounding, this isn't actually possible.
+
+        if (config.scrollStickOnly) {
+            // A single stick that scrolls the mouse wheel, on the right where a thumb rests
+            VirtualControllerElement scrollStick = config.scrollStickHidden
+                    ? new ScrollAnalogStickFree(controller, context)
+                    : new ScrollAnalogStick(controller, context);
+            controller.addElement(scrollStick,
+                    screenScale(ANALOG_R_BASE_X, height) + rightDisplacement,
+                    screenScale(ANALOG_R_BASE_Y, height),
+                    screenScale(ANALOG_SIZE, height),
+                    screenScale(ANALOG_SIZE, height)
+            );
+            if (config.scrollStickMovesPointer) {
+                // Speed along the border: A slow, X medium, Y fast, in the bottom left corner
+                ScrollStickDriver driver = ((ScrollStick) scrollStick).getDriver();
+                int[][] speedButtons = {
+                        {VirtualControllerElement.EID_SPEED_SLOW, ScrollStickDriver.SPEED_SLOW,
+                                R.drawable.facebutton_a, R.drawable.facebutton_a_press, 1, 2},
+                        {VirtualControllerElement.EID_SPEED_MEDIUM, ScrollStickDriver.SPEED_MEDIUM,
+                                R.drawable.facebutton_x, R.drawable.facebutton_x_press, 0, 1},
+                        {VirtualControllerElement.EID_SPEED_FAST, ScrollStickDriver.SPEED_FAST,
+                                R.drawable.facebutton_y, R.drawable.facebutton_y_press, 1, 0},
+                };
+                String[] labels = {"A", "X", "Y"};
+                for (int i = 0; i < speedButtons.length; i++) {
+                    int[] b = speedButtons[i];
+                    SpeedButton button = new SpeedButton(controller, context, b[0], driver, b[1]);
+                    button.setText(labels[i]);
+                    button.setIcon(b[2]);
+                    button.setIconPress(b[3]);
+                    // The same diamond as the face buttons: column b[4], row b[5] of a 3 by 3 grid
+                    controller.addElement(button,
+                            screenScale(SPEED_BUTTONS_BASE_X + b[4] * BUTTON_SIZE, height),
+                            screenScale(SPEED_BUTTONS_BASE_Y + b[5] * BUTTON_SIZE, height),
+                            screenScale(BUTTON_SIZE, height),
+                            screenScale(BUTTON_SIZE, height)
+                    );
+                }
+            }
+            controller.setOpacity(config.oscOpacity);
+            return;
+        }
 
         if (!config.onlyL3R3)
         {
@@ -411,9 +459,29 @@ public class VirtualControllerConfigurationLoader {
         controller.setOpacity(config.oscOpacity);
     }
 
+    // Set in a profile's layout once it has one of its own; until then it uses the layout without a profile
+    private static final String OWN_LAYOUT_KEY = "own_layout";
+
+    /** Where the active profile keeps its on-screen controls layout; without a profile, OSC_PREFERENCE. */
+    public static String layoutPreferenceName() {
+        SettingsProfile profile = ProfilesManager.getInstance().getActive();
+        return profile == null ? OSC_PREFERENCE : OSC_PREFERENCE + "_" + profile.getUuid();
+    }
+
+    /** Resets the active profile's layout (or the one without a profile) to the default. */
+    public static void resetLayout(final Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(layoutPreferenceName(), Activity.MODE_PRIVATE).edit().clear();
+        if (!OSC_PREFERENCE.equals(layoutPreferenceName())) {
+            // An empty own layout, so the profile does not fall back to the layout without a profile
+            editor.putBoolean(OWN_LAYOUT_KEY, true);
+        }
+        editor.apply();
+    }
+
     public static void saveProfile(final VirtualController controller,
                                    final Context context) {
-        SharedPreferences.Editor prefEditor = context.getSharedPreferences(OSC_PREFERENCE, Activity.MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefEditor = context.getSharedPreferences(layoutPreferenceName(), Activity.MODE_PRIVATE).edit();
+        prefEditor.putBoolean(OWN_LAYOUT_KEY, true);
 
         for (VirtualControllerElement element : controller.getElements()) {
             String prefKey = ""+element.elementId;
@@ -428,7 +496,10 @@ public class VirtualControllerConfigurationLoader {
     }
 
     public static void loadFromPreferences(final VirtualController controller, final Context context) {
-        SharedPreferences pref = context.getSharedPreferences(OSC_PREFERENCE, Activity.MODE_PRIVATE);
+        SharedPreferences pref = context.getSharedPreferences(layoutPreferenceName(), Activity.MODE_PRIVATE);
+        if (!pref.getBoolean(OWN_LAYOUT_KEY, false)) {
+            pref = context.getSharedPreferences(OSC_PREFERENCE, Activity.MODE_PRIVATE);
+        }
 
         for (VirtualControllerElement element : controller.getElements()) {
             String prefKey = ""+element.elementId;

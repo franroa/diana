@@ -685,6 +685,70 @@
             android:title="@string/title_only_l3r3"
             app:iconSpaceReserved="false" />
         <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="checkbox_show_onscreen_controls"
+            android:key="checkbox_scroll_stick_only"
+            android:summary="@string/summary_scroll_stick_only"
+            android:title="@string/title_scroll_stick_only"
+            app:iconSpaceReserved="false" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="checkbox_scroll_stick_only"
+            android:key="checkbox_scroll_stick_hidden"
+            android:summary="@string/summary_scroll_stick_hidden"
+            android:title="@string/title_scroll_stick_hidden"
+            app:iconSpaceReserved="false" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="checkbox_scroll_stick_only"
+            android:key="checkbox_scroll_stick_pointer"
+            android:summary="@string/summary_scroll_stick_pointer"
+            android:title="@string/title_scroll_stick_pointer"
+            app:iconSpaceReserved="false" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="checkbox_scroll_stick_pointer"
+            android:key="checkbox_scroll_stick_keys"
+            android:summary="@string/summary_scroll_stick_keys"
+            android:title="@string/title_scroll_stick_keys"
+            app:iconSpaceReserved="false" />
+        <com.limelight.preferences.SeekBarPreference
+            android:defaultValue="50"
+            android:dependency="checkbox_scroll_stick_pointer"
+            android:dialogMessage="@string/summary_scroll_stick_speed"
+            android:key="seekbar_scroll_stick_speed_slow"
+            android:max="100"
+            android:summary="@string/summary_scroll_stick_speed"
+            android:text="@string/suffix_scroll_stick_speed"
+            android:title="@string/title_scroll_stick_speed_slow"
+            app:iconSpaceReserved="false"
+            seekbar:min="10"
+            seekbar:step="5" />
+        <com.limelight.preferences.SeekBarPreference
+            android:defaultValue="75"
+            android:dependency="checkbox_scroll_stick_pointer"
+            android:dialogMessage="@string/summary_scroll_stick_speed"
+            android:key="seekbar_scroll_stick_speed_medium"
+            android:max="100"
+            android:summary="@string/summary_scroll_stick_speed"
+            android:text="@string/suffix_scroll_stick_speed"
+            android:title="@string/title_scroll_stick_speed_medium"
+            app:iconSpaceReserved="false"
+            seekbar:min="10"
+            seekbar:step="5" />
+        <com.limelight.preferences.SeekBarPreference
+            android:defaultValue="100"
+            android:dependency="checkbox_scroll_stick_pointer"
+            android:dialogMessage="@string/summary_scroll_stick_speed"
+            android:key="seekbar_scroll_stick_speed_fast"
+            android:max="100"
+            android:summary="@string/summary_scroll_stick_speed"
+            android:text="@string/suffix_scroll_stick_speed"
+            android:title="@string/title_scroll_stick_speed_fast"
+            app:iconSpaceReserved="false"
+            seekbar:min="10"
+            seekbar:step="5" />
+        <CheckBoxPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:defaultValue="true"

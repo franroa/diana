@@ -163,6 +163,12 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
     private static final int STYLUS_UP_DEAD_ZONE_RADIUS = 50;
 
     private static final int THREE_FINGER_TAP_THRESHOLD = 300;
+    // Pinch with two fingers in "Normal mouse" mode: how many pixels the fingers move apart (or together)
+    // for one notch of the mouse wheel up (or down), the way games zoom
+    private static final float PINCH_PIXELS_PER_NOTCH = 80f;
+    private static final short WHEEL_NOTCH = 120;
+    // Distance between the two fingers at the last notch sent, -1 while no pinch is going on
+    private float pinchDistance = -1f;
     private static final int FOUR_FINGER_TAP_THRESHOLD = 300;
     private static final int FIVE_FINGER_TAP_THRESHOLD = 300;
 
@@ -3106,6 +3112,10 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
                         return true;
                     }
 
+                    if (touchContextMap[0] instanceof AbsoluteTouchContext && handlePinchZoom(event)) {
+                        return true;
+                    }
+
                     return handleTouchInput(event, touchContextMap, true);
                 }
             }
@@ -3116,6 +3126,29 @@ public class Game extends AppCompatActivity implements SurfaceHolder.Callback,
 
         // Unknown class
         return false;
+    }
+
+    /**
+     * Two fingers moving apart scroll the mouse wheel up, moving together scroll it down, one notch at a time,
+     * which zooms in and out in games. Returns true for the moves it took; finger down and up events go on to
+     * the touch contexts as before.
+     */
+    private boolean handlePinchZoom(MotionEvent event) {
+        if (event.getPointerCount() != 2 || event.getActionMasked() != MotionEvent.ACTION_MOVE) {
+            pinchDistance = -1f;
+            return false;
+        }
+        float distance = (float) Math.hypot(event.getX(0) - event.getX(1), event.getY(0) - event.getY(1));
+        if (pinchDistance < 0) {
+            pinchDistance = distance;
+            return true;
+        }
+        int notches = (int) ((distance - pinchDistance) / PINCH_PIXELS_PER_NOTCH);
+        if (notches != 0) {
+            pinchDistance += notches * PINCH_PIXELS_PER_NOTCH;
+            conn.sendMouseHighResScroll((short) (notches * WHEEL_NOTCH));
+        }
+        return true;
     }
 
     private boolean handleTouchInput(MotionEvent event, TouchContext[] inputContextMap, boolean isTouchScreen) {

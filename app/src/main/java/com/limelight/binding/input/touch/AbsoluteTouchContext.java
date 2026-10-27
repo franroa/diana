@@ -34,6 +34,11 @@ public class AbsoluteTouchContext implements TouchContext {
             if (confirmedTap) {
                 conn.sendMouseButtonUp(buttonPrimary);
             }
+            // Sunshine turns a button held on its absolute mouse into a click (press and release at
+            // once). A relative move first sends the buttons through the relative mouse, which holds
+            // them: the right button then stays down until the finger lifts (drag with it held).
+            // One pixel, as moves that add up to nothing are dropped before they are sent.
+            conn.sendMouseMove((short) 1, (short) 0);
             conn.sendMouseButtonDown(buttonSecondary);
         }
     };
