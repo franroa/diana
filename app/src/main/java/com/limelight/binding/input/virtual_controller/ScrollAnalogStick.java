@@ -40,6 +40,12 @@ public class ScrollAnalogStick extends AnalogStick implements ScrollStick {
     }
 
     @Override
+    protected boolean acceptsTouchOutsideCircle() {
+        // A finger landing just outside the ring still scrolls instead of clicking in the game
+        return true;
+    }
+
+    @Override
     protected boolean hasDeadZone() {
         // The driver has its own, smaller dead zone; without this the stick waits up to 150 ms
         return false;

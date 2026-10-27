@@ -136,7 +136,8 @@ public class AnalogStick extends VirtualControllerElement {
     private static double getAngle(float way_x, float way_y) {
         // prevent divisions by zero for corner cases
         if (way_x == 0) {
-            return way_y < 0 ? Math.PI : 0;
+            // Straight up is 0 and straight down is PI, as the quadrants below give next to the vertical
+            return way_y < 0 ? 0 : Math.PI;
         } else if (way_y == 0) {
             if (way_x > 0) {
                 return Math.PI * 3 / 2;
@@ -253,6 +254,11 @@ public class AnalogStick extends VirtualControllerElement {
         }
     }
 
+    /** Whether a touch that starts in the corners of the element, outside the stick's circle, takes the stick. */
+    protected boolean acceptsTouchOutsideCircle() {
+        return false;
+    }
+
     /** Whether the first movements near the centre are held back (see updatePosition). */
     protected boolean hasDeadZone() {
         return true;
@@ -299,7 +305,7 @@ public class AnalogStick extends VirtualControllerElement {
         movement_angle = getAngle(relative_x, relative_y);
 
         // pass touch event to parent if out of outer circle
-        if (movement_radius > radius_complete && !isPressed())
+        if (movement_radius > radius_complete && !isPressed() && !acceptsTouchOutsideCircle())
             return false;
 
         // chop radius if out of outer circle or near the edge

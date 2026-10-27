@@ -151,7 +151,8 @@ public class AnalogStickFree extends VirtualControllerElement {
     private static double getAngle(float way_x, float way_y) {
         // prevent divisions by zero for corner cases
         if (way_x == 0) {
-            return way_y < 0 ? Math.PI : 0;
+            // Straight up is 0 and straight down is PI, as the quadrants below give next to the vertical
+            return way_y < 0 ? 0 : Math.PI;
         } else if (way_y == 0) {
             if (way_x > 0) {
                 return Math.PI * 3 / 2;
