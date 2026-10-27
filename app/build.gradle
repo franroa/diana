@@ -11,8 +11,9 @@ android {
         minSdk 21
         targetSdk 34
 
-        versionName "20.2.6"
-        versionCode = 57
+        // CI passes -PversionCode/-PversionName for Diana releases (.github/workflows/release.yml)
+        versionName project.findProperty("versionName") ?: "20.2.6"
+        versionCode = (project.findProperty("versionCode") ?: "57").toInteger()
 
         // Generate native debug symbols to allow Google Play to symbolicate our native crashes
         ndk.debugSymbolLevel = 'FULL'
