@@ -53,6 +53,11 @@ jobs:
           code=$(( 1000 + GITHUB_RUN_NUMBER * 10 + GITHUB_RUN_ATTEMPT ))
           echo "code=$code" >> "$GITHUB_OUTPUT"
           echo "name=20.2.6-diana.$code" >> "$GITHUB_OUTPUT"
+      - name: Install the NDK app/build.gradle asks for
+        # Gradle can download it by itself, but that download failed on the runner ("Error on ZipFile")
+        run: |
+          ndk=$(sed -n 's/^ *ndkVersion "\(.*\)"/\1/p' app/build.gradle)
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$ndk" > /dev/null
       - name: Diana APK
         env:
           CODE: ${{ steps.version.outputs.code }}
