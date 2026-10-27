@@ -64,8 +64,9 @@ class ScrollStickDriver {
     private boolean moved = false;
     private boolean ticking = false;
     private int speed = SPEED_MEDIUM;
-    // Share of a tick of scrolling owed so far: the on ticks are spread out evenly, not grouped
-    private float owed = 0f;
+    // Share of a tick of scrolling owed so far: the on ticks are spread out evenly, not grouped. It starts at
+    // one, so the first tick after a push always scrolls
+    private float owed = 1f;
 
     private final Runnable tick = new Runnable() {
         @Override
@@ -167,12 +168,12 @@ class ScrollStickDriver {
      * possible (50% is on, off, on, off), so the game sees a steady slower scroll rather than bursts.
      */
     private boolean scrollingOn() {
-        owed += speedPercent[speed] / 100f;
-        if (owed >= 1f) {
+        boolean on = owed >= 1f;
+        if (on) {
             owed -= 1f;
-            return true;
         }
-        return false;
+        owed += speedPercent[speed] / 100f;
+        return on;
     }
 
     /** Directions the stick points into: bit 0 right, 1 up, 2 left, 3 down; two bits for a corner zone. */
@@ -206,7 +207,7 @@ class ScrollStickDriver {
     }
 
     private void releaseKeys() {
-        owed = 0f;
+        owed = 1f;
         for (int d = 0; d < 4; d++) {
             if (keyDown[d]) {
                 keyDown[d] = false;

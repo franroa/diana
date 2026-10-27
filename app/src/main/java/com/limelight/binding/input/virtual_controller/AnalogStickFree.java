@@ -321,6 +321,11 @@ public class AnalogStickFree extends VirtualControllerElement {
         setBgOpacity();
     }
 
+    /** Whether the first movements near the centre are held back (see updatePosition). */
+    protected boolean hasDeadZone() {
+        return true;
+    }
+
     private void updatePosition(long eventTime) {
         float complete = radius_complete - radius_analog_stick;
 
@@ -336,7 +341,7 @@ public class AnalogStickFree extends VirtualControllerElement {
         // giving analog stick input and we don't want to snap back into the deadzone.
         // We also release the deadzone if the user keeps the stick pressed for a bit to allow
         // them to make precise movements.
-        stick_state = (stick_state == AnalogStickFree.STICK_STATE.MOVED_ACTIVE ||
+        stick_state = (stick_state == AnalogStickFree.STICK_STATE.MOVED_ACTIVE || !hasDeadZone() ||
                 eventTime - timeLastClick > timeoutDeadzone ||
                 movement_radius > radius_dead_zone) ?
                 AnalogStickFree.STICK_STATE.MOVED_ACTIVE : AnalogStickFree.STICK_STATE.MOVED_IN_DEAD_ZONE;

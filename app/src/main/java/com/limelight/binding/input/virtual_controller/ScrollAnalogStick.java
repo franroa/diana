@@ -40,6 +40,12 @@ public class ScrollAnalogStick extends AnalogStick implements ScrollStick {
     }
 
     @Override
+    protected boolean hasDeadZone() {
+        // The driver has its own, smaller dead zone; without this the stick waits up to 150 ms
+        return false;
+    }
+
+    @Override
     public ScrollStickDriver getDriver() {
         return driver;
     }
