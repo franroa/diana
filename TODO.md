@@ -11,3 +11,8 @@
      (`files/profiles/profiles.json`, `shared_prefs/OSC*.xml`, `shared_prefs/com.limelight.noirdebug_preferences.xml`
      via `adb shell run-as com.limelight.noirdebug`), uninstall Diana, install the new release and copy them back.
   4. Keep the keystore and its password somewhere safe: without them no update can be installed over it.
+
+- [ ] **Scale the shipped layouts to the screen.** `app/src/main/assets/default_profiles/` holds the profiles
+  and on-screen layouts exported from the Pixel 8 Pro; the layouts are in pixels of that screen, so on
+  another screen (the Galaxy Tab A) the buttons are not in the right place. Store them as fractions of the
+  screen, or scale them on the first start.

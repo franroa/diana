@@ -1,0 +1,29 @@
+{
+  "09d0fb03-2922-440f-9e3e-80c5d5aa22bf": {
+    "17": "{\"LEFT\":1733,\"TOP\":556,\"WIDTH\":344,\"HEIGHT\":344,\"ENABLED\":true}",
+    "18": "{\"LEFT\":0,\"TOP\":836,\"WIDTH\":101,\"HEIGHT\":96,\"ENABLED\":true}",
+    "19": "{\"LEFT\":0,\"TOP\":707,\"WIDTH\":101,\"HEIGHT\":99,\"ENABLED\":true}",
+    "20": "{\"LEFT\":0,\"TOP\":592,\"WIDTH\":96,\"HEIGHT\":98,\"ENABLED\":true}",
+    "own_layout": true
+  },
+  "ce776ce5-5ec8-4b77-89f3-02c804214155": {
+    "1": "{\"LEFT\":284,\"TOP\":30,\"WIDTH\":320,\"HEIGHT\":338,\"ENABLED\":true}",
+    "10": "{\"LEFT\":662,\"TOP\":845,\"WIDTH\":265,\"HEIGHT\":159,\"ENABLED\":false}",
+    "11": "{\"LEFT\":1154,\"TOP\":903,\"WIDTH\":159,\"HEIGHT\":92,\"ENABLED\":true}",
+    "12": "{\"LEFT\":174,\"TOP\":520,\"WIDTH\":382,\"HEIGHT\":383,\"ENABLED\":true}",
+    "13": "{\"LEFT\":1339,\"TOP\":643,\"WIDTH\":299,\"HEIGHT\":353,\"ENABLED\":true}",
+    "14": "{\"LEFT\":640,\"TOP\":356,\"WIDTH\":159,\"HEIGHT\":119,\"ENABLED\":true}",
+    "15": "{\"LEFT\":1628,\"TOP\":868,\"WIDTH\":159,\"HEIGHT\":119,\"ENABLED\":true}",
+    "16": "{\"LEFT\":955,\"TOP\":51,\"WIDTH\":159,\"HEIGHT\":92,\"ENABLED\":true}",
+    "2": "{\"LEFT\":96,\"TOP\":317,\"WIDTH\":159,\"HEIGHT\":119,\"ENABLED\":true}",
+    "3": "{\"LEFT\":1849,\"TOP\":260,\"WIDTH\":159,\"HEIGHT\":119,\"ENABLED\":true}",
+    "4": "{\"LEFT\":87,\"TOP\":147,\"WIDTH\":159,\"HEIGHT\":119,\"ENABLED\":true}",
+    "5": "{\"LEFT\":1863,\"TOP\":431,\"WIDTH\":159,\"HEIGHT\":119,\"ENABLED\":true}",
+    "6": "{\"LEFT\":1589,\"TOP\":570,\"WIDTH\":138,\"HEIGHT\":141,\"ENABLED\":true}",
+    "65": "{\"LEFT\":500,\"TOP\":845,\"WIDTH\":265,\"HEIGHT\":159,\"ENABLED\":true}",
+    "7": "{\"LEFT\":1755,\"TOP\":567,\"WIDTH\":132,\"HEIGHT\":132,\"ENABLED\":true}",
+    "8": "{\"LEFT\":1688,\"TOP\":720,\"WIDTH\":132,\"HEIGHT\":132,\"ENABLED\":true}",
+    "9": "{\"LEFT\":1647,\"TOP\":427,\"WIDTH\":132,\"HEIGHT\":132,\"ENABLED\":true}",
+    "own_layout": true
+  }
+}

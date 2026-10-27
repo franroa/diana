@@ -10,15 +10,20 @@ import androidx.annotation.NonNull;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.limelight.LimeLog;
+import com.limelight.binding.input.virtual_controller.VirtualControllerConfigurationLoader;
 import com.limelight.preferences.PreferenceConfiguration;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,6 +34,8 @@ import java.util.UUID;
 public class ProfilesManager {
     private static final String PROFILES_DIR = "profiles";
     private static final String PROFILES_FILE = "profiles.json";
+    private static final String DEFAULT_PROFILES_DIR = "default_profiles";
+    private static final String LAYOUTS_FILE = "layouts.json";
 
     static ProfilesManager instance;
 
@@ -71,8 +78,11 @@ public class ProfilesManager {
             }
             File file = new File(dir, PROFILES_FILE);
             if (!file.exists()) {
-                // We don't want to warn user about profile not exist
-                return true;
+                // First start: the profiles shipped with the app, if any. We don't want to warn user about
+                // profile not exist
+                if (!installDefaultProfiles(file)) {
+                    return true;
+                }
             }
             try (Reader reader = new FileReader(file)) {
                 Gson gson = new Gson();
@@ -97,6 +107,57 @@ public class ProfilesManager {
         }
 
         return true;
+    }
+
+    /**
+     * Installs the profiles the app ships with (assets/default_profiles): profiles.json is copied as the
+     * profiles file, and layouts.json holds each profile's on-screen controls layout, by profile uuid, which
+     * go to that profile's layout preferences. Returns false if the app ships none.
+     */
+    private boolean installDefaultProfiles(File profilesFile) {
+        try {
+            byte[] profilesJson;
+            try (InputStream in = appContext.getAssets().open(DEFAULT_PROFILES_DIR + "/" + PROFILES_FILE)) {
+                profilesJson = readAll(in);
+            }
+            try (InputStream in = appContext.getAssets().open(DEFAULT_PROFILES_DIR + "/" + LAYOUTS_FILE)) {
+                Map<String, Map<String, Object>> layouts = new Gson().fromJson(
+                        new String(readAll(in), StandardCharsets.UTF_8),
+                        new TypeToken<Map<String, Map<String, Object>>>(){}.getType());
+                for (Map.Entry<String, Map<String, Object>> layout : layouts.entrySet()) {
+                    SharedPreferences.Editor editor = appContext.getSharedPreferences(
+                            VirtualControllerConfigurationLoader.OSC_PREFERENCE + "_" + layout.getKey(),
+                            Context.MODE_PRIVATE).edit();
+                    for (Map.Entry<String, Object> value : layout.getValue().entrySet()) {
+                        if (value.getValue() instanceof Boolean) {
+                            editor.putBoolean(value.getKey(), (Boolean) value.getValue());
+                        } else {
+                            editor.putString(value.getKey(), String.valueOf(value.getValue()));
+                        }
+                    }
+                    editor.commit();
+                }
+            }
+            // The profiles file last: if anything above failed, the next start tries again
+            try (FileOutputStream out = new FileOutputStream(profilesFile)) {
+                out.write(profilesJson);
+            }
+            LimeLog.info("ArtemisProfile: Installed the default profiles");
+            return true;
+        } catch (IOException | RuntimeException e) {
+            LimeLog.info("ArtemisProfile: No default profiles installed: " + e);
+            return false;
+        }
+    }
+
+    private static byte[] readAll(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buffer = new byte[8192];
+        int n;
+        while ((n = in.read(buffer)) > 0) {
+            out.write(buffer, 0, n);
+        }
+        return out.toByteArray();
     }
 
     public boolean save(Context context) {
